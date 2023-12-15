@@ -19,6 +19,7 @@ public class GraphicSwing extends Graphic {
 
     private final int minFontSize;
     private final int pixelSize;
+    private final Style highlightSmall;
     private Style lastStyle;
     private Graphics2D gr;
 
@@ -41,6 +42,7 @@ public class GraphicSwing extends Graphic {
         this.gr = gr;
         this.pixelSize = pixelSize;
         this.minFontSize = pixelSize * 3;
+        highlightSmall = Style.HIGHLIGHT.deriveStyle(pixelSize * 3, false, Style.HIGHLIGHT.getColor());
     }
 
     /**
@@ -102,6 +104,29 @@ public class GraphicSwing extends Graphic {
             else
                 gr.drawOval(p.x, p.y, w.x, w.y);
         }
+    }
+
+    @Override
+    public void drawCircleHighlight(VectorInterface p1, VectorInterface p2, Style style) {
+        if (style.getThickness() < highlightSmall.getThickness()) {
+            if (style == Style.HIGHLIGHT)
+                applyStyle(highlightSmall);
+            else {
+                applyStyle(style);
+                gr.setStroke(highlightSmall.getStroke());
+                lastStyle = null;
+            }
+        } else
+            applyStyle(style);
+        Vector w = Vector.width(p1, p2);
+        Vector p = Vector.min(p1, p2);
+        final int minSize = pixelSize * 8;
+        if (w.x < minSize || w.y < minSize) {
+            VectorInterface c = p1.add(p2).div(2);
+            w = new Vector(Math.max(minSize, w.x), Math.max(minSize, w.y));
+            p = c.sub(w.div(2)).round();
+        }
+        gr.drawOval(p.x, p.y, w.x, w.y);
     }
 
     private void applyStyle(Style style) {
