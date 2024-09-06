@@ -1585,6 +1585,7 @@ Sind evtl. die Namen der Variablen nicht eindeutig?</string>
     <string name="key_shapeType_DIL">DIL-Gehäuse</string>
     <string name="key_shapeType_LAYOUT">Layout</string>
     <string name="key_shapeType_CUSTOM">Benutzerdefiniert</string>
+    <string name="key_shapeType_MINIMIZED">verkleinerte Schaltung</string>
 
     <string name="key_textOrientation">Ausrichtung</string>
     <string name="key_textOrientation_tt">Lage der Koordinate relativ zum Text.</string>
@@ -1683,6 +1684,8 @@ Sind evtl. die Namen der Variablen nicht eindeutig?</string>
     <string name="key_oscillationDetectionCounter">Oszillationserkennung</string>
     <string name="key_oscillationDetectionCounter_tt">Anzahl der Gatterlaufzeiten, bei der eine Oszillation erkannt
         wird, wenn sich die Schaltung bis dahin noch nicht stabilisiert hat.</string>
+    <string name="key_recoverFromOscillation">Bei Oszillationen mit Zufallswerten weitermachen.</string>
+    <string name="key_recoverFromOscillation_tt">Wird diese Option gesetzt, wird das Verhalten der Simulation im Falle einer Oszillation unvorhersehbar und zudem extrem langsam!</string>
 
     <string name="key_telnetEscape">Telnet-Modus</string>
     <string name="key_telnetEscape_tt">Wenn gesetzt, werden die Telnet Steuerkommandos ausgewertet.
@@ -1811,6 +1814,11 @@ Sind evtl. die Namen der Variablen nicht eindeutig?</string>
         Wenn diese Option fehlt, erfolgt eine Ausgabe auf die Konsole.
     </string>
     <string name="cli_errorCreatingStats">Fehler bei der Erzeugung der CSV Datei!</string>
+
+    <string name="cli_run_noClock">Kein aktivierter Takt in der Schaltung gefunden!</string>
+    <string name="cli_errorRunningCircuit">Fehler beim Starten der Schaltung!</string>
+    <string name="cli_help_run">Start eine Schaltung headless.</string>
+    <string name="cli_help_run_dig">Der Dateiname der Schaltung.</string>
 
     <string name="menu_window">Fenster</string>
     <string name="menu_about">Über Digital</string>

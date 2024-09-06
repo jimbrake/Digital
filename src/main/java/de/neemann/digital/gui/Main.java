@@ -811,8 +811,7 @@ public final class Main extends JFrame implements ClosingWindowListener.ConfirmS
             public void actionPerformed(ActionEvent e) {
                 if (!getCircuitComponent().isLocked()) {
                     ElementOrder o = new ElementOrder(circuitComponent,
-                            element -> element.equalsDescription(Out.DESCRIPTION)
-                                    || element.equalsDescription(Out.LEDDESCRIPTION),
+                            element -> element.equalsDescription(Out.DESCRIPTION),
                             Lang.get("menu_orderOutputs"));
                     if (new ElementOrderer<>(Main.this, Lang.get("menu_orderOutputs"), o).addOkButton().showDialog())
                         circuitComponent.modify(o.getModifications());
@@ -1142,31 +1141,6 @@ public final class Main extends JFrame implements ClosingWindowListener.ConfirmS
             }
         }.setToolTip(Lang.get("menu_runAllTests_tt")).setAccelerator("F11");
 
-        ToolTipAction speedTest = new ToolTipAction(Lang.get("menu_speedTest")) {
-            private final NumberFormat format = new DecimalFormat("0.0");
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Model model = new ModelCreator(circuitComponent.getCircuit(), library).createModel(false);
-                    try {
-                        model.setWindowPosManager(windowPosManager);
-                        SpeedTest speedTest = new SpeedTest(model);
-                        String frequency = format.format(speedTest.calculate() / 1000);
-                        circuitComponent.getCircuit().clearState();
-                        SwingUtilities.invokeLater(() -> {
-                            windowPosManager.closeAll();
-                            JOptionPane.showMessageDialog(Main.this, Lang.get("msg_frequency_N", frequency));
-                        });
-                    } finally {
-                        model.close();
-                    }
-                } catch (Exception e1) {
-                    showError(Lang.get("msg_speedTestError"), e1);
-                }
-            }
-        }.setToolTip(Lang.get("menu_speedTest_tt"));
-
         showMeasurementDialog = new ToolTipAction(Lang.get("menu_showDataTable")) {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -1202,33 +1176,6 @@ public final class Main extends JFrame implements ClosingWindowListener.ConfirmS
             }
         });
 
-        ToolTipAction stats = new ToolTipAction(Lang.get("menu_stats")) {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    model = new ModelCreator(getCircuitComponent().getCircuit(), library).createModel(false);
-                    Statistics stats = new Statistics(model);
-                    new StatsDialog(Main.this, stats.getTableModel()).setVisible(true);
-                } catch (ElementNotFoundException | PinException | NodeException e) {
-                    new ErrorMessage(Lang.get("msg_couldNotCreateStats")).addCause(e).show(Main.this);
-                }
-            }
-        }.setToolTip(Lang.get("menu_stats_tt"));
-
-        ToolTipAction pathLen = new ToolTipAction(Lang.get("menu_calcMaxPathLen")) {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    Model model = new ModelCreator(getCircuitComponent().getCircuit(), library).createModel(false);
-                    ModelAnalyser ma = new ModelAnalyser(model);
-                    int depth = ma.calcMaxPathLen();
-                    JOptionPane.showMessageDialog(Main.this, Lang.get("msg_maxPathLen", depth));
-                } catch (ElementNotFoundException | PinException | NodeException | AnalyseException | BacktrackException e) {
-                    new ErrorMessage(Lang.get("msg_couldNotCalculateMaxPathLen")).addCause(e).show(Main.this);
-                }
-            }
-        }.setToolTip(Lang.get("menu_calcMaxPathLen_tt"));
-
         JMenu run = new JMenu(Lang.get("menu_sim"));
         menuBar.add(run);
         run.add(showMeasurementDialog.createJMenuItem());
@@ -1244,10 +1191,6 @@ public final class Main extends JFrame implements ClosingWindowListener.ConfirmS
         run.addSeparator();
         run.add(runTests.createJMenuItem());
         run.add(runAllTests.createJMenuItem());
-        run.addSeparator();
-        run.add(speedTest.createJMenuItem());
-        run.add(stats.createJMenuItem());
-        run.add(pathLen.createJMenuItem());
 
         toolBar.add(runModelState.setIndicator(runModelAction.createJButtonNoText()));
         toolBar.add(runToBreakAction.createJButtonNoText());
@@ -1336,6 +1279,8 @@ public final class Main extends JFrame implements ClosingWindowListener.ConfirmS
                 .setToolTip(Lang.get("menu_expression_tt"))
                 .createJMenuItem());
 
+        analyse.addSeparator();
+
         analyse.add(new ToolTipAction(Lang.get("menu_fsm")) {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1357,6 +1302,60 @@ public final class Main extends JFrame implements ClosingWindowListener.ConfirmS
         }
                 .setToolTip(Lang.get("menu_fsm_tt"))
                 .createJMenuItem());
+
+        analyse.addSeparator();
+
+        analyse.add(new ToolTipAction(Lang.get("menu_speedTest")) {
+            private final NumberFormat format = new DecimalFormat("0.0");
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    Model model = new ModelCreator(circuitComponent.getCircuit(), library).createModel(false);
+                    try {
+                        model.setWindowPosManager(windowPosManager);
+                        SpeedTest speedTest = new SpeedTest(model);
+                        String frequency = format.format(speedTest.calculate() / 1000);
+                        circuitComponent.getCircuit().clearState();
+                        SwingUtilities.invokeLater(() -> {
+                            windowPosManager.closeAll();
+                            JOptionPane.showMessageDialog(Main.this, Lang.get("msg_frequency_N", frequency));
+                        });
+                    } finally {
+                        model.close();
+                    }
+                } catch (Exception e1) {
+                    showError(Lang.get("msg_speedTestError"), e1);
+                }
+            }
+        }.setToolTip(Lang.get("menu_speedTest_tt")).createJMenuItem());
+
+        analyse.add(new ToolTipAction(Lang.get("menu_stats")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    model = new ModelCreator(getCircuitComponent().getCircuit(), library).createModel(false);
+                    Statistics stats = new Statistics(model);
+                    new StatsDialog(Main.this, stats.getTableModel()).setVisible(true);
+                } catch (ElementNotFoundException | PinException | NodeException e) {
+                    new ErrorMessage(Lang.get("msg_couldNotCreateStats")).addCause(e).show(Main.this);
+                }
+            }
+        }.setToolTip(Lang.get("menu_stats_tt")).createJMenuItem());
+
+        analyse.add(new ToolTipAction(Lang.get("menu_calcMaxPathLen")) {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                try {
+                    Model model = new ModelCreator(getCircuitComponent().getCircuit(), library).createModel(false);
+                    ModelAnalyser ma = new ModelAnalyser(model);
+                    int depth = ma.calcMaxPathLen();
+                    JOptionPane.showMessageDialog(Main.this, Lang.get("msg_maxPathLen", depth));
+                } catch (ElementNotFoundException | PinException | NodeException | AnalyseException | BacktrackException e) {
+                    new ErrorMessage(Lang.get("msg_couldNotCalculateMaxPathLen")).addCause(e).show(Main.this);
+                }
+            }
+        }.setToolTip(Lang.get("menu_calcMaxPathLen_tt")).createJMenuItem());
     }
 
     private void orderMeasurements() {
@@ -1475,6 +1474,8 @@ public final class Main extends JFrame implements ClosingWindowListener.ConfirmS
             long time = System.currentTimeMillis();
             modelCreator = new ModelCreator(circuitComponent.getCircuit(), library);
             model = modelCreator.createModel(true);
+
+            model.setRecoverFromOscillation(circuitComponent.getCircuit().getAttributes().get(Keys.RECOVER_FROM_OSCILLATION));
 
             time = System.currentTimeMillis() - time;
             LOGGER.debug("model creation: " + time + " ms, " + model.getNodes().size() + " nodes");

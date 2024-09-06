@@ -12,6 +12,7 @@ import de.neemann.digital.core.io.In;
 import de.neemann.digital.core.io.InValue;
 import de.neemann.digital.core.io.Out;
 import de.neemann.digital.core.switching.Switch;
+import de.neemann.digital.core.wiring.Clock;
 import de.neemann.digital.draw.elements.*;
 import de.neemann.digital.draw.graphics.Polygon;
 import de.neemann.digital.draw.graphics.Vector;
@@ -19,6 +20,7 @@ import de.neemann.digital.draw.graphics.*;
 import de.neemann.digital.draw.library.*;
 import de.neemann.digital.draw.model.Net;
 import de.neemann.digital.draw.model.NetList;
+import de.neemann.digital.draw.shapes.CustomCircuitShapeType;
 import de.neemann.digital.draw.shapes.Drawable;
 import de.neemann.digital.draw.shapes.InputShape;
 import de.neemann.digital.draw.shapes.ShapeFactory;
@@ -80,7 +82,6 @@ public class CircuitComponent extends JComponent implements ChangedListener, Lib
         ATTR_LIST.add(Keys.PINCOUNT);
         ATTR_LIST.add(Keys.BACKGROUND_COLOR);
         ATTR_LIST.add(Keys.DESCRIPTION);
-        ATTR_LIST.add(Keys.OSCILLATION_DETECTION_COUNTER);
         ATTR_LIST.add(Keys.LOCKED_MODE);
         ATTR_LIST.add(Keys.ROMMANAGER);
         ATTR_LIST.add(Keys.SHOW_DATA_TABLE);
@@ -92,6 +93,8 @@ public class CircuitComponent extends JComponent implements ChangedListener, Lib
         ATTR_LIST.add(Keys.BIG_ENDIAN_SETTING);
         ATTR_LIST.add(Keys.SKIP_HDL);
         ATTR_LIST.add(Keys.IS_GENERIC);
+        ATTR_LIST.add(Keys.OSCILLATION_DETECTION_COUNTER);
+        ATTR_LIST.add(Keys.RECOVER_FROM_OSCILLATION);
     }
 
 
@@ -1036,6 +1039,21 @@ public class CircuitComponent extends JComponent implements ChangedListener, Lib
     }
 
     /**
+     * rounds the given vector to the raster in minimized circuit shapes
+     *
+     * @param pos       the vector
+     * @param minRaster if set to false the given values is returned
+     * @return pos round to raster
+     */
+    public static Vector toMinRaster(Vector pos, boolean minRaster) {
+        if (!minRaster)
+            return pos;
+        final int s = SIZE * 2;
+        return new Vector((int) Math.round((double) pos.x / s) * s,
+                (int) Math.round((double) pos.y / s) * s);
+    }
+
+    /**
      * @return the circuit used
      */
     public Circuit getCircuit() {
@@ -1443,7 +1461,7 @@ public class CircuitComponent extends JComponent implements ChangedListener, Lib
             mouseNormal.activate();
 
         VisualElement ve = null;
-        if (activeMouseController instanceof MouseControllerNormal) {
+        if (activeMouseController instanceof MouseControllerNormal && lastMousePos != null) {
             Vector pos = getPosVector(lastMousePos.x, lastMousePos.y);
             ve = getCircuit().getElementAt(pos);
             if (ve == null)
@@ -1846,6 +1864,7 @@ public class CircuitComponent extends JComponent implements ChangedListener, Lib
     private final class MouseControllerInsertElement extends MouseController {
         private VisualElement element;
         private Vector delta;
+        private boolean minRaster;
 
         private MouseControllerInsertElement(Cursor cursor) {
             super(cursor);
@@ -1857,6 +1876,7 @@ public class CircuitComponent extends JComponent implements ChangedListener, Lib
             delta = null;
             deleteAction.setEnabled(true);
             rotateAction.setEnabled(true);
+            minRaster = needsMinRaster(element);
         }
 
         @Override
@@ -1869,7 +1889,7 @@ public class CircuitComponent extends JComponent implements ChangedListener, Lib
                 GraphicMinMax minMax = element.getMinMax(false);
                 delta = element.getPos().sub(minMax.getMax());
             }
-            element.setPos(pos.add(delta));
+            element.setPos(toMinRaster(pos.add(delta), minRaster));
             repaint();
         }
 
@@ -1905,6 +1925,15 @@ public class CircuitComponent extends JComponent implements ChangedListener, Lib
             mouseNormal.activate();
         }
 
+    }
+
+    private boolean needsMinRaster(VisualElement element) {
+        if (getCircuit().getAttributes().get(Keys.SHAPE_TYPE) != CustomCircuitShapeType.MINIMIZED)
+            return false;
+
+        return element.equalsDescription(In.DESCRIPTION)
+                || element.equalsDescription(Out.DESCRIPTION)
+                || element.equalsDescription(Clock.DESCRIPTION);
     }
 
     private void insertWires(VisualElement element) {
@@ -1960,6 +1989,7 @@ public class CircuitComponent extends JComponent implements ChangedListener, Lib
         private VisualElement visualElement;
         private Vector delta;
         private VisualElement originalVisualElement;
+        private boolean minRaster;
 
         private MouseControllerMoveElement(Cursor cursor) {
             super(cursor);
@@ -1975,6 +2005,7 @@ public class CircuitComponent extends JComponent implements ChangedListener, Lib
             deleteAction.setEnabled(true);
             rotateAction.setEnabled(true);
             copyAction.setEnabled(true);
+            minRaster = needsMinRaster(visualElement);
             graphicHasChanged();
         }
 
@@ -1995,7 +2026,7 @@ public class CircuitComponent extends JComponent implements ChangedListener, Lib
         void moved(MouseEvent e) {
             if (!isLocked()) {
                 Vector pos = getPosVector(e);
-                visualElement.setPos(pos.add(delta));
+                visualElement.setPos(toMinRaster(pos.add(delta), minRaster));
                 repaint();
             }
         }

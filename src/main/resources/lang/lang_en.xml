@@ -1574,6 +1574,7 @@
     <string name="key_shapeType_DIL">DIL-Chip</string>
     <string name="key_shapeType_LAYOUT">Layout</string>
     <string name="key_shapeType_CUSTOM">User defined</string>
+    <string name="key_shapeType_MINIMIZED">Downsized Circuit</string>
 
     <string name="key_textOrientation">Orientation</string>
     <string name="key_textOrientation_tt">Position of the coordinate relative to the text.</string>
@@ -1666,6 +1667,8 @@
     <string name="key_oscillationDetectionCounter">Oscillation detection</string>
     <string name="key_oscillationDetectionCounter_tt">Number of gate propagation times at which a oscillation is
         detected if the circuit has not stabilized by then.</string>
+    <string name="key_recoverFromOscillation">In case of oscillations, continue with random values.</string>
+    <string name="key_recoverFromOscillation_tt">If this option is set, the behavior of the simulation becomes unpredictable and extremely slow if there is an oscillation!</string>
 
     <string name="key_telnetEscape">Telnet mode</string>
     <string name="key_telnetEscape_tt">If set, the Telnet control commands are evaluated.
@@ -1791,6 +1794,11 @@
         If this option is missing, the table is written to stdout.
     </string>
     <string name="cli_errorCreatingStats">Error while creating the stats file!</string>
+
+    <string name="cli_run_noClock">No running clock found in circuit!</string>
+    <string name="cli_errorRunningCircuit">Error running the circuit!</string>
+    <string name="cli_help_run">Runs a circuit headless.</string>
+    <string name="cli_help_run_dig">File name of the circuit.</string>
 
     <string name="menu_window">Windows</string>
     <string name="menu_about">About</string>
