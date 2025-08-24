@@ -1,8 +1,5 @@
 [![Download](distribution/Download.svg)](https://github.com/hneemann/Digital/releases/latest/download/Digital.zip)
 
-![Build Status](https://travis-ci.com/hneemann/Digital.svg?branch=master)
-[![codecov](https://codecov.io/gh/hneemann/Digital/branch/master/graph/badge.svg)](https://codecov.io/gh/hneemann/Digital)
-
 # Digital #
 
 Digital is an easy-to-use digital logic designer and circuit simulator designed for educational purposes.
@@ -62,9 +59,6 @@ These are the main features of Digital:
 
 The latest changes that have not yet been released are listed in the
 [release notes](distribution/ReleaseNotes.txt).
-You can find the latest pre-release builds [here](https://infdigital.dhbw-mosbach.de/). 
-In the pre release builds the automated GUI tests are usually not executed. 
-All other tests, including the HDL tests, were executed without errors.
 
 ## Documentation ##
 
@@ -100,8 +94,8 @@ Prior to the development of Digital, I used [Logisim](http://www.cburch.com/logi
 If you are familiar with Logisim you will recognize the wire color scheme.
 
 Logisim is a excellent and proven tool for teaching purposes, that has been actively developed until 2011. 
-In 2013 Carl Burch has started the development of a new simulator called [Toves](http://www.toves.org/). 
-In his [blog](http://www.toves.org/blog/) he explained why he decided to develop a new simulator instead of improving Logisim. 
+In 2013 Carl Burch has started the development of a new simulator called Toves. 
+In his blog he explained why he decided to develop a new simulator instead of improving Logisim. 
 In short: In his opinion, there are weaknesses in Logisim's architecture that are too difficult to overcome. 
 Unfortunately, the development of Toves was discontinued at a very early stage.
 
